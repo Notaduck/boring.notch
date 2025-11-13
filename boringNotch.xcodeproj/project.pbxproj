@@ -113,6 +113,9 @@
 		B1D6FD432C6603730015F173 /* SoftwareUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D6FD422C6603730015F173 /* SoftwareUpdater.swift */; };
 		B1FEB4992C7686630066EBBC /* PanGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1FEB4982C7686630066EBBC /* PanGesture.swift */; };
 		F38DE6482D8243E7008B5C6D /* BatteryActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38DE6472D8243E2008B5C6D /* BatteryActivityManager.swift */; };
+		0D726D395B5B41C29321B6DF /* GitHubNotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AA1395F28E2440EAFAB8D00 /* GitHubNotificationModel.swift */; };
+		2F1A72017C97433781E3FE8B /* GitHubNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABEA8FEF65F24450978B7FFD /* GitHubNotificationManager.swift */; };
+		2B59491495534D9197293D2B /* GitHubNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 584FB2DB57CD4D958B63C970 /* GitHubNotificationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -240,6 +243,9 @@
 		B1ECFA032C6FE58A002ACD87 /* CoreDisplay.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreDisplay.framework; path = ../../../../../System/Library/Frameworks/CoreDisplay.framework; sourceTree = "<group>"; };
 		B1FEB4982C7686630066EBBC /* PanGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanGesture.swift; sourceTree = "<group>"; };
 		F38DE6472D8243E2008B5C6D /* BatteryActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryActivityManager.swift; sourceTree = "<group>"; };
+		6AA1395F28E2440EAFAB8D00 /* GitHubNotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubNotificationModel.swift; sourceTree = "<group>"; };
+		ABEA8FEF65F24450978B7FFD /* GitHubNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubNotificationManager.swift; sourceTree = "<group>"; };
+		584FB2DB57CD4D958B63C970 /* GitHubNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubNotificationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -357,6 +363,7 @@
 				149E0B962C737D00006418B1 /* WebcamManager.swift */,
 				147CB9562C8CCC980094C254 /* BoringExtensionManager.swift */,
 				14C08BB52C8DE42D000F8AA0 /* CalendarManager.swift */,
+				ABEA8FEF65F24450978B7FFD /* GitHubNotificationManager.swift */,
 			);
 			path = managers;
 			sourceTree = "<group>";
@@ -479,6 +486,7 @@
 				14D570C82C5F38890011E668 /* BoringViewModel.swift */,
 				14D570CA2C5F4B2C0011E668 /* BatteryStatusViewModel.swift */,
 				1153BD902D986DB300979FB0 /* PlaybackState.swift */,
+				6AA1395F28E2440EAFAB8D00 /* GitHubNotificationModel.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -564,6 +572,7 @@
 				14D570C52C5F38210011E668 /* BoringHeader.swift */,
 				14D570D12C5F6C6A0011E668 /* BoringExtrasMenu.swift */,
 				1471A8582C6281BD0058408D /* BoringNotchWindow.swift */,
+				584FB2DB57CD4D958B63C970 /* GitHubNotificationView.swift */,
 			);
 			path = Notch;
 			sourceTree = "<group>";
@@ -786,6 +795,9 @@
 				F38DE6482D8243E7008B5C6D /* BatteryActivityManager.swift in Sources */,
 				B10348D92C74E56000475897 /* ConditionalModifier.swift in Sources */,
 				14D570C22C5EAFBF0011E668 /* EmptyState.swift in Sources */,
+				0D726D395B5B41C29321B6DF /* GitHubNotificationModel.swift in Sources */,
+				2F1A72017C97433781E3FE8B /* GitHubNotificationManager.swift in Sources */,
+				2B59491495534D9197293D2B /* GitHubNotificationView.swift in Sources */,
 				B1FEB4992C7686630066EBBC /* PanGesture.swift in Sources */,
 				9A0887352C7AFF8E00C160EA /* TabSelectionView.swift in Sources */,
 				112FB7352CCF16F70015238C /* NotchSpaceManager.swift in Sources */,
