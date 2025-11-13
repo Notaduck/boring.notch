@@ -274,6 +274,11 @@ struct NotchHomeView: View {
                     }
                     .environmentObject(vm)
             }
+            
+            if Defaults[.enableGitHubNotifications] && GitHubNotificationManager.shared.isAuthenticated {
+                GitHubNotificationListView()
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+            }
 
             if shouldShowCamera {
                 CameraPreviewView(webcamManager: webcamManager)
