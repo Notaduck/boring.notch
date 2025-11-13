@@ -5,9 +5,10 @@
 //  Created for GitHub notifications feature
 //
 
-import Foundation
+import AppKit
 import Combine
 import Defaults
+import Foundation
 import Security
 
 class GitHubNotificationManager: ObservableObject {
