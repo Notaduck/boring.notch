@@ -72,6 +72,40 @@ brew install --cask TheBoredTeam/boring-notch/boring-notch --no-quarantine
 - Hover over the notch to see it expand and reveal all its secrets.
 - Use the controls to manage your music like a rockstar.
 
+## ✨ Features
+
+### 🎵 Music Control Center
+- Live music playback with visualizer
+- Album art display with lighting effects
+- Full playback controls (play, pause, skip, shuffle, repeat)
+- Works with Apple Music, Spotify, and YouTube Music
+
+### 📅 Calendar Integration
+- View upcoming events and reminders
+- Calendar event details at a glance
+
+### 🔔 GitHub Notifications (New!)
+- Real-time GitHub notification monitoring
+- Unread notification count badge
+- Mark notifications as read
+- Open notifications directly in browser
+- Secure token storage
+- See [GITHUB_NOTIFICATIONS_README.md](GITHUB_NOTIFICATIONS_README.md) for setup
+
+### 🔋 Battery Status
+- Current battery level and charging status
+- Time to full charge estimates
+- Power status notifications
+
+### 📚 Shelf with AirDrop
+- Drag and drop file storage
+- AirDrop integration
+- Quick file access
+
+### 📷 Mirror (Webcam)
+- Front camera preview
+- Quick access to camera
+
 ## 📋 Roadmap
 - [x] Playback live activity 🎧
 - [x] Calendar integration 📆
@@ -80,11 +114,11 @@ brew install --cask TheBoredTeam/boring-notch/boring-notch --no-quarantine
 - [x] Customizable gesture control 👆🏻
 - [x] Shelf functionality with AirDrop 📚
 - [x] Notch sizing customization, finetuning on different display sizes 🖥️
+- [x] GitHub notifications 🔔 (Implementation complete, awaiting Xcode integration)
 - [ ] Reminders integration ☑️
 - [ ] Customizable Layout options 🛠️
 - [ ] Extension system 🧩
 - [ ] System HUD replacements (volume, brightness, backlight) 🎚️💡⌨️
-- [ ] Notifications (under consideration) 🔔
 <!-- - [ ] Clipboard history manager 📌 `Extension` -->
 <!-- - [ ] Download indicator of different browsers (Safari, Chromium browsers, Firefox) 🌍 `Extension`-->
 <!-- - [ ] Customizable function buttons 🎛️ -->
