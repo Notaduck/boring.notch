@@ -60,6 +60,9 @@ struct SettingsView: View {
                 NavigationLink(value: "Shelf") {
                     Label("Shelf", systemImage: "books.vertical")
                 }
+                NavigationLink(value: "GitHub") {
+                    Label("GitHub", systemImage: "bell.badge")
+                }
                 NavigationLink(value: "Shortcuts") {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
@@ -92,6 +95,8 @@ struct SettingsView: View {
                     Downloads()
                 case "Shelf":
                     Shelf()
+                case "GitHub":
+                    GitHubSettings()
                 case "Shortcuts":
                     Shortcuts()
                 case "Extensions":
@@ -342,6 +347,159 @@ struct Charge: View {
             }
         }
         .navigationTitle("Battery")
+    }
+}
+
+struct GitHubSettings: View {
+    @ObservedObject var githubManager = GitHubNotificationManager.shared
+    @State private var tokenInput: String = ""
+    @State private var showTokenInput: Bool = false
+    @State private var isTestingConnection: Bool = false
+    
+    var body: some View {
+        Form {
+            Section {
+                Defaults.Toggle("Enable GitHub notifications", key: .enableGitHubNotifications)
+                
+                HStack {
+                    Text("Status:")
+                    Spacer()
+                    if githubManager.isAuthenticated {
+                        Label("Connected", systemImage: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                    } else {
+                        Label("Not connected", systemImage: "xmark.circle.fill")
+                            .foregroundColor(.red)
+                    }
+                }
+            } header: {
+                Text("General")
+            }
+            
+            Section {
+                if githubManager.isAuthenticated {
+                    HStack {
+                        Text("Token configured")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Button("Remove") {
+                            githubManager.deleteToken()
+                        }
+                        .foregroundColor(.red)
+                    }
+                } else {
+                    if showTokenInput {
+                        VStack(alignment: .leading, spacing: 8) {
+                            SecureField("Personal Access Token", text: $tokenInput)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            HStack {
+                                Button("Cancel") {
+                                    showTokenInput = false
+                                    tokenInput = ""
+                                }
+                                .buttonStyle(.bordered)
+                                
+                                Button("Save") {
+                                    if !tokenInput.isEmpty {
+                                        githubManager.saveToken(tokenInput)
+                                        tokenInput = ""
+                                        showTokenInput = false
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(tokenInput.isEmpty)
+                            }
+                        }
+                    } else {
+                        Button("Add GitHub Token") {
+                            showTokenInput = true
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+                
+                if isTestingConnection {
+                    HStack {
+                        ProgressView()
+                            .scaleEffect(0.7)
+                        Text("Testing connection...")
+                            .foregroundColor(.secondary)
+                    }
+                } else if githubManager.isAuthenticated {
+                    Button("Test Connection") {
+                        isTestingConnection = true
+                        githubManager.fetchNotifications()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            isTestingConnection = false
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+                
+                if let error = githubManager.lastError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            } header: {
+                Text("Authentication")
+            } footer: {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Create a Personal Access Token at:")
+                    Link("GitHub Settings → Developer settings → Personal access tokens", 
+                         destination: URL(string: "https://github.com/settings/tokens")!)
+                        .font(.caption)
+                    Text("Required scopes: notifications")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Section {
+                HStack {
+                    Text("Polling interval")
+                    Spacer()
+                    Picker("", selection: Defaults.$githubPollingInterval) {
+                        Text("30 seconds").tag(30.0)
+                        Text("1 minute").tag(60.0)
+                        Text("2 minutes").tag(120.0)
+                        Text("5 minutes").tag(300.0)
+                        Text("10 minutes").tag(600.0)
+                    }
+                    .labelsHidden()
+                }
+                
+                Defaults.Toggle("Show notification badge", key: .showGitHubNotificationBadge)
+            } header: {
+                Text("Preferences")
+            }
+            
+            Section {
+                HStack {
+                    Text("Unread notifications:")
+                    Spacer()
+                    Text("\(githubManager.unreadCount)")
+                        .foregroundColor(.secondary)
+                }
+                
+                if githubManager.unreadCount > 0 {
+                    Button("Mark all as read") {
+                        githubManager.markAllAsRead()
+                    }
+                    .buttonStyle(.bordered)
+                }
+                
+                Button("Refresh now") {
+                    githubManager.fetchNotifications()
+                }
+                .buttonStyle(.bordered)
+                .disabled(!githubManager.isAuthenticated)
+            } header: {
+                Text("Notifications")
+            }
+        }
+        .navigationTitle("GitHub Notifications")
     }
 }
 

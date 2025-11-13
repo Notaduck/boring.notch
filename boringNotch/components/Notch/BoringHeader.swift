@@ -56,6 +56,9 @@ struct BoringHeader: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                    if Defaults[.enableGitHubNotifications] && GitHubNotificationManager.shared.isAuthenticated && GitHubNotificationManager.shared.unreadCount > 0 {
+                        GitHubNotificationBadge()
+                    }
                     if Defaults[.settingsIconInNotch] {
                         Button(action: {
                             SettingsWindowController.shared.showWindow()

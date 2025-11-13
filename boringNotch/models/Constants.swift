@@ -153,6 +153,11 @@ extension Defaults.Keys {
     // MARK: Media Controller
     static let mediaController = Key<MediaControllerType>("mediaController", default: defaultMediaController)
     
+    // MARK: GitHub Notifications
+    static let enableGitHubNotifications = Key<Bool>("enableGitHubNotifications", default: false)
+    static let githubPollingInterval = Key<TimeInterval>("githubPollingInterval", default: 60.0) // 1 minute
+    static let showGitHubNotificationBadge = Key<Bool>("showGitHubNotificationBadge", default: true)
+    
     // Helper to determine the default media controller based on macOS version
     static var defaultMediaController: MediaControllerType {
         if #available(macOS 15.4, *) {
