@@ -113,23 +113,6 @@ jobs:
           verbosity: xcpretty
           upload-logs: always
           configuration: release
-        continue-on-error: true
-      
-      - name: Extract Build Errors
-        id: extract_errors
-        if: failure()
-        run: |
-          echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
-          echo "Extracting build errors..."
-          # Try to find and extract error messages from logs
-          if [ -f "build-log.txt" ]; then
-            grep -i "error:" build-log.txt | head -20 > build-errors.txt || echo "No specific errors found in logs" > build-errors.txt
-          else
-            echo "Build log not found" > build-errors.txt
-          fi
-          echo "BUILD_ERRORS<<EOF" >> $GITHUB_OUTPUT
-          cat build-errors.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
       
       - name: Set Build Success
         id: build_success
@@ -168,8 +151,14 @@ jobs:
             if (buildStatus === 'success') {
               comment += '✅ **Build Passed**\n\n';
             } else if (buildStatus === 'failure') {
-              comment += '❌ **Build Failed**\n\n';
+              comment += '❌ **Build Failed - Compilation Errors Detected**\n\n';
+              comment += '🚨 **This PR introduces compilation errors and cannot be merged.**\n\n';
               comment += 'Please check the [build logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.\n\n';
+              comment += '**Common issues:**\n';
+              comment += '- Type errors (missing or incorrect types)\n';
+              comment += '- Missing dependencies or imports\n';
+              comment += '- Syntax errors\n';
+              comment += '- Generic parameter inference issues\n\n';
             } else {
               comment += '⚠️  **Build Status Unknown**\n\n';
             }
@@ -200,3 +189,9 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
+      
+      - name: Fail if build failed
+        if: needs.build.result == 'failure'
+        run: |
+          echo "::error::Build failed with compilation errors. Please fix the errors before merging."
+          exit 1
