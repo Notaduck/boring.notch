@@ -181,6 +181,18 @@ We’re all about good vibes and awesome contributions! Here’s how you can joi
    ```
 8. **Create a Pull Request**: Head to the original repository and click on "New Pull Request." Fill in the required details, **make sure the base branch is set to `dev`**, and submit your PR. Let’s see what you’ve got!
 
+
+### 🔍 Automated Build Checks
+
+When you create a PR, our CI/CD system automatically:
+- ✅ **Builds your code** to catch compilation errors
+- ✅ **Runs SwiftLint** to check code quality
+- ✅ **Verifies code signing** configuration
+
+**Important**: If the build fails with compilation errors, the PR cannot be merged. Check the PR comment for details and fix any errors before requesting review.
+
+See [.github/CI_BUILD_FEEDBACK.md](.github/CI_BUILD_FEEDBACK.md) for more details about how this works.
+
 ## Join our Discord Server
 
 <a href="https://discord.gg/GvYcYpAKTu" target="_blank"><img src="https://iili.io/28m3GHv.png" alt="Join The Boring Server!" style="height: 60px !important;width: 217px !important;" ></a>
