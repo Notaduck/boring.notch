@@ -355,7 +355,6 @@ struct GitHubSettings: View {
     @State private var tokenInput: String = ""
     @State private var showTokenInput: Bool = false
     @State private var isTestingConnection: Bool = false
-    @Default(.githubPollingInterval) var githubPollingInterval
     
     var body: some View {
         Form {
@@ -461,7 +460,7 @@ struct GitHubSettings: View {
                 HStack {
                     Text("Polling interval")
                     Spacer()
-                    Picker("", selection: $githubPollingInterval) {
+                    Picker("", selection: Defaults.$githubPollingInterval) {
                         Text("30 seconds").tag(30.0)
                         Text("1 minute").tag(60.0)
                         Text("2 minutes").tag(120.0)

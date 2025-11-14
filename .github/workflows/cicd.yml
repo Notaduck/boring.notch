@@ -113,6 +113,7 @@ jobs:
           verbosity: xcpretty
           upload-logs: always
           configuration: release
+        continue-on-error: true
       
       - name: Extract Build Errors
         id: extract_errors
