@@ -9,17 +9,20 @@ Previously, the CI/CD workflow used `continue-on-error: true` on critical build 
 ## Solution
 The workflow has been updated to:
 
-1. **Fail on compilation errors**: Removed `continue-on-error: true` from the build step so that build failures cause the workflow to fail
-2. **Clear error reporting**: Enhanced PR comments to clearly indicate when compilation errors are detected
-3. **Explicit workflow failure**: Added a step that explicitly fails the workflow when builds fail
+1. **Fail on compilation errors**: Build failures now properly fail the workflow
+2. **Extract and report errors**: Build errors are extracted and posted inline in PR comments
+3. **Automatic iteration**: When builds fail, @copilot is mentioned to automatically attempt fixes
+4. **Clear error reporting**: Enhanced PR comments clearly indicate when compilation errors are detected
 
 ## How It Works
 
 ### Build Job
 - **Purpose**: Compiles the macOS application using xcodebuild
 - **Behavior**: 
-  - If the build succeeds, the job succeeds
-  - If the build fails (compilation errors), the job fails
+  - Attempts to build the application
+  - If the build fails, extracts error messages from build logs
+  - Uploads error details as an artifact for the comment job
+  - Fails the job if build fails
   - Build logs are always uploaded for review
 
 ### SwiftLint Job
@@ -30,12 +33,28 @@ The workflow has been updated to:
   - Uploads reports for detailed review
 
 ### Comment PR Job
-- **Purpose**: Provides feedback on PR status
+- **Purpose**: Provides feedback on PR status and triggers automatic iteration
 - **Behavior**: 
   - Always runs (even if build fails) to provide feedback
+  - Downloads build error artifacts if available
   - Posts a comment with build status, SwiftLint results, and code signing status
-  - If build failed, includes helpful error messages
+  - If build failed:
+    - Includes extracted build errors inline (up to 2000 characters)
+    - Mentions @copilot to trigger automatic iteration and fixes
+    - Provides links to full build logs
+    - Lists common error types
   - Explicitly fails the workflow if build failed
+
+### Automatic Iteration
+When a build fails:
+1. Build errors are extracted from xcodebuild logs
+2. Errors are posted in a PR comment with @copilot mention
+3. Copilot receives notification and can:
+   - Read the error details
+   - Analyze what went wrong
+   - Fix the compilation errors
+   - Push new commits
+4. Workflow runs again automatically on new commits
 
 ## What This Means for Developers
 
@@ -44,8 +63,10 @@ The workflow has been updated to:
 2. Wait for the CI/CD workflow to complete
 3. Check the PR comment for build status
 4. If the build fails:
-   - Click the "View Full Report" link to see detailed logs
-   - Fix the compilation errors
+   - Review the inline error details in the PR comment
+   - Or click the "View Full Report" link to see complete logs
+   - @copilot will be automatically notified and may attempt to fix the errors
+   - Alternatively, you can fix the compilation errors manually
    - Push the fixes
    - The workflow will run again automatically
 
