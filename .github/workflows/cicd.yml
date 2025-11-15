@@ -117,27 +117,62 @@ jobs:
       
       - name: Extract Build Errors
         id: extract_errors
-        if: failure()
+        if: steps.xcodebuild.outcome == 'failure'
         run: |
           echo "BUILD_FAILED=true" >> $GITHUB_OUTPUT
           echo "Extracting build errors..."
-          # Try to find and extract error messages from logs
-          if [ -f "build-log.txt" ]; then
-            grep -i "error:" build-log.txt | head -20 > build-errors.txt || echo "No specific errors found in logs" > build-errors.txt
-          else
-            echo "Build log not found" > build-errors.txt
+          
+          # Create error report
+          cat > build-errors.txt << 'EOF'
+          # Build Failure Report
+          
+          ## Workflow Information
+          - Run ID: ${{ github.run_id }}
+          - Repository: ${{ github.repository }}
+          - Branch: ${{ github.ref_name }}
+          - Commit: ${{ github.sha }}
+          
+          ## Build Errors
+          
+          EOF
+          
+          # Try to extract errors from xcodebuild logs
+          if [ -d "${{ steps.xcodebuild.outputs.logs-path }}" ]; then
+            echo "Checking logs in: ${{ steps.xcodebuild.outputs.logs-path }}"
+            find "${{ steps.xcodebuild.outputs.logs-path }}" -name "*.log" -exec grep -H -A 5 "error:" {} \; >> build-errors.txt 2>&1 || true
           fi
-          echo "BUILD_ERRORS<<EOF" >> $GITHUB_OUTPUT
-          cat build-errors.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Also check for any .log files in the current directory
+          find . -maxdepth 2 -name "*.log" -exec grep -H -A 5 "error:" {} \; >> build-errors.txt 2>&1 || true
+          
+          # If no errors found, add a generic message
+          if ! grep -q "error:" build-errors.txt; then
+            echo "Build failed but no specific error messages were extracted." >> build-errors.txt
+            echo "Please check the full build logs for details." >> build-errors.txt
+          fi
+          
+          echo "Error report created"
+          cat build-errors.txt
+      
+      - name: Upload Build Errors
+        if: steps.xcodebuild.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-errors
+          path: build-errors.txt
+          retention-days: 7
       
       - name: Set Build Success
         id: build_success
-        if: success()
+        if: steps.xcodebuild.outcome == 'success'
         run: |
           echo "BUILD_FAILED=false" >> $GITHUB_OUTPUT
           echo "✅ Build succeeded!" > build-status.txt
           echo "BUILD_STATUS=✅ Success" >> $GITHUB_OUTPUT
+      
+      - name: Set Build Failure
+        if: steps.xcodebuild.outcome == 'failure'
+        run: exit 1
 
   comment-pr:
     name: Comment on PR
@@ -152,6 +187,12 @@ jobs:
         continue-on-error: true
         with:
           name: swiftlint-report
+      
+      - name: Download Build Errors
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: build-errors
       
       - name: Create PR Comment
         uses: actions/github-script@v7
@@ -168,8 +209,39 @@ jobs:
             if (buildStatus === 'success') {
               comment += '✅ **Build Passed**\n\n';
             } else if (buildStatus === 'failure') {
-              comment += '❌ **Build Failed**\n\n';
-              comment += 'Please check the [build logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.\n\n';
+              comment += '❌ **Build Failed - Compilation Errors Detected**\n\n';
+              comment += '🚨 **This PR introduces compilation errors and cannot be merged.**\n\n';
+              
+              // Try to read and include build errors
+              const fs = require('fs');
+              let buildErrors = '';
+              try {
+                if (fs.existsSync('build-errors.txt')) {
+                  buildErrors = fs.readFileSync('build-errors.txt', 'utf8');
+                  // Limit to first 2000 characters to avoid huge comments
+                  if (buildErrors.length > 2000) {
+                    buildErrors = buildErrors.substring(0, 2000) + '\n\n... (truncated, see full logs for details)';
+                  }
+                }
+              } catch (error) {
+                console.log('Could not read build errors:', error.message);
+              }
+              
+              if (buildErrors) {
+                comment += '#### Build Error Details\n\n';
+                comment += '```\n' + buildErrors + '\n```\n\n';
+              }
+              
+              comment += 'Please check the [build logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for complete details.\n\n';
+              comment += '**Common issues:**\n';
+              comment += '- Type errors (missing or incorrect types)\n';
+              comment += '- Missing dependencies or imports\n';
+              comment += '- Syntax errors\n';
+              comment += '- Generic parameter inference issues\n\n';
+              
+              // Mention @copilot for automatic iteration
+              comment += '---\n\n';
+              comment += '@copilot Please review the build errors above and fix the compilation issues.\n\n';
             } else {
               comment += '⚠️  **Build Status Unknown**\n\n';
             }
@@ -200,3 +272,9 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
+      
+      - name: Fail if build failed
+        if: needs.build.result == 'failure'
+        run: |
+          echo "::error::Build failed with compilation errors. Please fix the errors before merging."
+          exit 1
